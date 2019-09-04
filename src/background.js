@@ -312,31 +312,21 @@ const rollout = {
 };
 
 const setup = {
-  async prefListener() {
-    let rolloutPref = await browser.experiments.preferences.getUserPref(
-      "doh-rollout.enabled", false);
-    log("observe fired", rolloutPref);
-    if (rolloutPref) {
-      await rollout.init();
-    } else {
-      await rollout.restore();
-    }
-  },
-
+  enabled: false,
   async start() {
-    // Check the pref set by Normandy for running the addon
-    let runAddon = await browser.experiments.preferences.getUserPref(
-      "doh-rollout.enabled", false);
-    if (!runAddon) {
-      log("Normandy pref is false; not running the addon");
+    let runAddon = await browser.experiments.preferences.getUserPref("doh-rollout.enabled", false);
+    if (!runAddon && !this.enabled) {
+      log("....");
+    } else if (!runAddon) {
+      this.enabled = false;
+      rollout.restore();
     } else {
+      this.enabled = true;
       rollout.init();
     }
-    // Observe the enable pref as Normandy might fire second
-    browser.experiments.preferences.onPrefChanged.addListener(() => {
-      this.prefListener();
-    });
-  },
+
+    browser.experiments.preferences.onPrefChanged.addListener(() => this.start());
+  }
 };
 
 setup.start();

@@ -2,7 +2,7 @@
 /* global browser, runHeuristics */
 
 function log() {
-  if (false) {
+  if (true) {
     console.log(...arguments);
   }
 }

@@ -5,7 +5,7 @@ let Cu3 = Components.utils;
 Cu3.import("resource://gre/modules/Services.jsm");
 
 function log() {
-  if (false) {
+  if (true) {
     console.log(...arguments);
   }
 }

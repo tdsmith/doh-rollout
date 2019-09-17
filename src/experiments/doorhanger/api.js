@@ -54,6 +54,31 @@ class DoorhangerEventEmitter extends EventEmitter {
       },
     ];
 
+    let doorhangerEvents = event => {
+      let win, messageBody, messageBodyChildren, currentMessageChildElement, currentMessageTagName, currentMessageInnerHTML ;
+
+      switch (event) {
+      case "shown":
+        // Get Current Notification on Active Tab
+        win = getMostRecentBrowserWindow();
+        messageBody =  win.PopupNotifications.panel.firstChild.querySelector(".popup-notification-description");
+        messageBodyChildren = messageBody.children;
+        // Loop through each child element of the popup notification text
+        // These elements are not named, so we have to qualify it using its tagName
+        // and confirmation that its not an empty string
+        for (var messageBodyChild in messageBodyChildren) {
+          currentMessageChildElement = messageBody.childNodes[messageBodyChild];
+          currentMessageTagName = currentMessageChildElement.tagName;
+          currentMessageInnerHTML = currentMessageChildElement.innerHTML;
+          if ( currentMessageTagName === "html:b" && currentMessageInnerHTML !== "" ) {
+            currentMessageChildElement.style.display = "block";
+            currentMessageChildElement.style.marginBottom = "8px";
+          }
+        }
+        break;
+      }
+    };
+
     let learnMoreURL = Services.urlFormatter.formatURL("https://support.mozilla.org/%LOCALE%/kb/firefox-dns-over-https");
     const options = {
       hideClose: true,
@@ -64,6 +89,7 @@ class DoorhangerEventEmitter extends EventEmitter {
       popupIconURL: "chrome://browser/skin/connection-secure.svg",
       learnMoreURL,
       escAction: "buttoncommand",
+      eventCallback: doorhangerEvents,
     };
     recentWindow.PopupNotifications.show(browser, "doh-first-time", text, null, primaryAction, secondaryActions, options);
   }

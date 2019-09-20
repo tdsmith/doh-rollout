@@ -76,7 +76,7 @@ const stateManager = {
         await stateManager.rememberDisableHeuristics();
       } else {
         // Check if trr.mode is not in default value.
-        await rollout.prefHasUserValueCheck();
+        await rollout.trrModePrefHasUserValueCheck();
       }
       return false;
     }
@@ -173,9 +173,9 @@ const rollout = {
     await browser.storage.local.set({[name]: value});
   },
 
-  async prefHasUserValueCheck() {
-    log("prefHasUserValueCheck");
-    // This confirms if a user has modified DoH outside of the addon
+  async trrModePrefHasUserValueCheck() {
+    log("trrModePrefHasUserValueCheck");
+    // This confirms if a user has modified DoH (via the TRR_MODE_PREF) outside of the addon
     // This runs only on the FIRST time that add-on is enabled, and if the stored pref
     // mismatches the current pref (Meaning something outside of the add-on has changed it
     if (
@@ -195,7 +195,7 @@ const rollout = {
     if (!doneFirstRun) {
       log("first run!");
       this.setSetting("doneFirstRun", true);
-      await this.prefHasUserValueCheck();
+      await this.trrModePrefHasUserValueCheck();
 
     } else {
       log("not first run!");

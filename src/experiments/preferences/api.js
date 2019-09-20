@@ -32,10 +32,8 @@ ExtensionPreferencesManager.addSetting("dohRollout.state", {
     case "uninstalled":
       break;
     case "disabled":
-      prefs[TRR_MODE_PREF] = 0;
       break;
     case "manuallyDisabled":
-      prefs[TRR_MODE_PREF] = 0;
       break;
     case "UIOk":
     case "UITimeout":

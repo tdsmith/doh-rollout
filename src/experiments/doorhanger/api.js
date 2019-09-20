@@ -54,18 +54,8 @@ class DoorhangerEventEmitter extends EventEmitter {
       },
     ];
 
-    let doorhangerEvents = event => {
-      // If additional event listening is needed, recommend switching
-      // to a switch case statement.
-      if (event !== "dismissed") {
-        return;
-      }
-      // On notification removal (switch away from active tab, close tab), enable DoH preference 
-      self.emit("doorhanger-accept", tabId);
-      recentWindow.PopupNotifications.remove(notification);
-    };
-
     let learnMoreURL = Services.urlFormatter.formatURL("https://support.mozilla.org/%LOCALE%/kb/firefox-dns-over-https");
+
     const options = {
       hideClose: true,
       persistWhileVisible: true,
@@ -78,7 +68,20 @@ class DoorhangerEventEmitter extends EventEmitter {
       eventCallback: doorhangerEvents,
       removeOnDismissal: false,
     };
+
     let notification = recentWindow.PopupNotifications.show(browser, "doh-first-time", text, null, primaryAction, secondaryActions, options);
+
+    let doorhangerEvents = event => {
+      // If additional event listening is needed, recommend switching
+      // to a switch case statement.
+      if (event !== "dismissed") {
+        return;
+      }
+      // On notification removal (switch away from active tab, close tab), enable DoH preference
+      self.emit("doorhanger-accept", tabId);
+      recentWindow.PopupNotifications.remove(notification);
+    };
+
   }
 }
 

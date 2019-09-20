@@ -59,16 +59,26 @@ const stateManager = {
     // In other words, if the user has made their own decision for DoH,
     // then we want to respect that and never run the heuristics again
 
-    if (disableHeuristics) {
+    if (disableHeuristics && curMode === 0) {
       await stateManager.rememberTRRMode();
       return false;
     } else if ( prevMode !== curMode ||  curMode === 5 ||  curMode === 3) {
       // Add logic specific if user disables DoH in about:config:
       if ( curMode === 0 ) {
+        log("manuallyDisabled");
         await stateManager.setState("manuallyDisabled");
       }
-      await stateManager.rememberDisableHeuristics();
-      await stateManager.rememberTRRMode();
+      if ( curMode === 3 || curMode === 2  ) {
+        // Turn DoH Back On, Reset Failsafe Check
+        await stateManager.setState("enabled");
+        await rollout.setSetting("doh-rollout.disable-heuristics", false);
+      } else {
+        // Disable DoH
+        await stateManager.setState("disabled");
+        await stateManager.rememberTRRMode();
+        await stateManager.rememberDisableHeuristics();
+      }
+
       return false;
     }
     return true;
